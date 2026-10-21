@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cape Coast Food Delivery Queue</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{box-sizing:border-box}
+body{font-family:'Inter','Segoe UI',Arial,sans-serif;background:#f5f7fb;margin:0;padding:0;color:#1e293b}
+.header{background:#0f172a;color:white;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,0.2)}
+.header h1{margin:0;font-size:17px;display:flex;align-items:center;gap:8px}
+.header-right{display:flex;gap:10px;align-items:center}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:none;background:#1e293b;color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px}
+.icon-btn.q{background:#f59e0b;color:white;font-weight:900;font-size:22px;border:2px solid white}
+.container{max-width:1180px;margin:0 auto;padding:12px}
+.grid{display:grid;grid-template-columns:1fr 1.1fr;gap:12px}
+@media(max-width:950px){.grid{grid-template-columns:1fr}}
+.card{background:white;border-radius:12px;padding:12px;box-shadow:0 1px 6px rgba(0,0,0,0.08);border:1px solid #e2e8f0}
+.card h3{margin:6px 0 8px 0;color:#0f172a;font-size:13px;display:flex;align-items:center;gap:6px}
+input,select{width:100%;padding:10px;margin:5px 0;border:1px solid #cbd5e1;border-radius:8px;font-size:13px}
+.radio-box{display:flex;gap:8px;margin:6px 0}
+.radio-box label{flex:1;padding:12px;border:2px solid #e2e8f0;border-radius:10px;text-align:center;cursor:pointer;font-weight:700;font-size:11px;background:white}
+.radio-box label.active{border-color:#0f172a;background:#0f172a;color:white}
+button{padding:11px;border:none;border-radius:8px;font-weight:700;cursor:pointer;width:100%;margin:5px 0;font-size:13px}
+.btn-order{background:#0f172a;color:white}
+.btn-cook{background:#16a34a;color:white}
+.btn-call{background:#dc2626;color:white;text-decoration:none;display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:6px;font-size:11px;width:auto}
+.btn-received{background:#2563eb;color:white;font-size:14px}
+.item{border-left:4px solid #0f172a;background:#f8fafc;padding:8px;margin-bottom:6px;border-radius:6px;font-size:11px}
+.item.front{border-left-color:#16a34a;background:#f0fdf4}
+.badge{font-size:9px;padding:2px 6px;border-radius:10px;font-weight:700}
+.badge-front{background:#dcfce7;color:#166534}
+.badge-rear{background:#fee2e2;color:#991b1b}
+.badge-res{background:#0f172a;color:white}
+.badge-pos{background:#fef08a;color:#854d0e;border:1px solid #facc15}
+.rider-card{border:1px solid #e2e8f0;background:#fffbeb;padding:7px;border-radius:8px;margin-bottom:5px;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.log{background:#0f172a;color:#22c55e;font-family:monospace;padding:8px;border-radius:8px;height:70px;overflow:auto;font-size:10px}
+.hidden{display:none}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.7);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:1000;padding:10px}
+.modal.show{display:flex}
+.modal-content{background:white;border-radius:16px;max-width:700px;width:100%;max-height:92vh;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.modal-header{background:#0f172a;color:white;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.modal-header h2{margin:0;font-size:15px}
+.close-btn{background:rgba(255,255,255,0.15);border:none;color:white;width:32px;height:32px;border-radius:50%;cursor:pointer}
+.modal-body{padding:14px;overflow-y:auto;max-height:72vh}
+.tab-bar{display:flex;gap:5px;margin-bottom:12px;background:#f1f5f9;padding:4px;border-radius:8px}
+.tab{flex:1;padding:8px;border:none;background:transparent;border-radius:6px;font-weight:600;font-size:11px;cursor:pointer;color:#64748b}
+.tab.active{background:white;color:#0f172a;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.info-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:8px}
+.info-box h4{margin:0 0 5px 0;color:#0f172a;font-size:11px}
+.info-box p, .info-box li{font-size:11px;line-height:1.5;margin:3px 0;color:#334155}
+.code{background:#0f172a;color:#22c55e;padding:2px 5px;border-radius:4px;font-family:monospace;font-size:10px}
+.pos-table{width:100%;border-collapse:collapse;margin:6px 0;font-size:11px}
+.pos-table th{background:#0f172a;color:white;padding:6px;text-align:left;font-size:10px}
+.pos-table td{padding:6px;border-bottom:1px solid #e2e8f0}
+.receipt-card{background:white;border-radius:16px;padding:18px;max-width:420px;width:95%;text-align:center}
+</style>
+</head>
+<body>
+<div class="header">
+<h1><i class="fa-solid fa-burger"></i> Cape Coast Food Queue</h1>
+<div class="header-right">
+<span style="font-size:11px;opacity:0.8">Click ? for Queue Info</span>
+<button class="icon-btn q" onclick="openAbout()" title="About Queue - Positions - Why Used">?</button>
+</div>
+</div>
+
+<div class="container">
+<div class="grid">
+<div class="card">
+<h3><i class="fa-solid fa-user"></i> 1. Customer</h3>
+<input id="custName" placeholder="Name e.g. Ama Mensah">
+<input id="custPhone" placeholder="Phone e.g. 0541234567">
+<h3><i class="fa-solid fa-truck-fast"></i> 2. Delivery Preference?</h3>
+<div class="radio-box">
+<label id="labelDelivery" onclick="setType('delivery')"><i class="fa-solid fa-motorcycle"></i><br>DELIVERY</label>
+<label id="labelPickup" onclick="setType('pickup')"><i class="fa-solid fa-handshake"></i><br>FACE TO FACE</label>
+</div>
+<input type="hidden" id="dtype">
+<div id="deliveryOptions" class="hidden">
+<h3><i class="fa-solid fa-location-dot"></i> 3. Choose Town in Cape Coast</h3>
+<select id="townSelect" onchange="onTown()">
+<option value="">-- Select Town in Cape Coast --</option>
+<option>Abura</option><option>Adisadel</option><option>Amamoma</option><option>Ankaful</option><option>Apewosika</option><option>Bakano</option><option>Bakaano</option><option>Brofoyedur</option><option>Cape Coast Castle Area</option><option>Duakor</option><option>Efutu</option><option>Egyam</option><option>Esuekyir</option><option>Eyifua</option><option>Fourth Ridge</option><option>Kakumdo</option><option>Kotokuraba</option><option>Kwaprow</option><option>Nkanfoa</option><option>Ola</option><option>Pedu</option><option>Siwdu</option><option>Tantri</option><option>Third Ridge</option><option>UCC Campus</option><option>UCC Science</option><option>OTHER - My town not listed (Write below)</option>
+</select>
+<input id="customLoc" class="hidden" placeholder="✍️ Write exact location e.g. Near Abura Market">
+<div id="assignedRider"></div>
+</div>
+<div id="pickupOptions" class="hidden">
+<div style="background:#f1f5f9;padding:8px;border-radius:6px;font-size:11px"><i class="fa-solid fa-store"></i> Pickup: KFC Tantri Branch - Face to Face</div>
+</div>
+<h3><i class="fa-solid fa-utensils"></i> 4. Food</h3>
+<select id="foodItem">
+<option value="">-- Select Food --</option>
+<option>🍗 Streetwise 2 - GH₵45</option><option>🍔 Zinger Burger - GH₵55</option><option>🍟 Fries + Drink - GH₵30</option><option>🍗 Bucket 9pcs - GH₵180</option>
+</select>
+<button class="btn-order" onclick="placeOrder()"><i class="fa-solid fa-plus"></i> PLACE ORDER (ENQUEUE to REAR)</button>
+<button class="btn-cook" onclick="cookOrder()"><i class="fa-solid fa-fire-burner"></i> COOK NEXT (DEQUEUE from FRONT)</button>
+<div id="log" class="log">> System ready - Click ? top right for Queue Info<br>> Cape Coast FIFO Active<br></div>
+</div>
+
+<div class="card">
+<h3><i class="fa-solid fa-list-ol"></i> Live Queues with RES + Positions</h3>
+<h4 style="margin:6px 0 4px 0;font-size:11px;color:#0f172a"><i class="fa-solid fa-kitchen-set"></i> Queue 1: Kitchen - RES & Positions</h4>
+<p style="font-size:9px;color:#64748b">RES = orderQueue array | FRONT = RES[0] next to cook | REAR = RES[last] new order</p>
+<div id="kitchenQueue"></div>
+<h4 style="margin:10px 0 4px 0;font-size:11px;color:#ea580c"><i class="fa-solid fa-motorcycle"></i> Queue 2: Delivery - RES & Positions</h4>
+<div id="deliveryQueue"></div>
+<h3 style="margin-top:10px"><i class="fa-solid fa-id-badge"></i> Delivery Men Numbers Must Be There</h3>
+<div class="rider-card"><div><b>Zone1 UCC/Amamoma</b><br><small>Kwesi Ebo</small></div><div style="text-align:right"><b>0551112223</b><br><a href="tel:0551112223" class="btn-call"><i class="fa-solid fa-phone"></i> Call</a></div></div>
+<div class="rider-card"><div><b>Zone2 Abura/Pedu</b><br><small>Kofi Annan</small></div><div style="text-align:right"><b>0241234567</b><br><a href="tel:0241234567" class="btn-call"><i class="fa-solid fa-phone"></i> Call</a></div></div>
+<div class="rider-card"><div><b>Zone3 Kotokuraba/Tantri</b><br><small>Yaw Mensah</small></div><div style="text-align:right"><b>0553344556</b><br><a href="tel:0553344556" class="btn-call"><i class="fa-solid fa-phone"></i> Call</a></div></div>
+<h3><i class="fa-solid fa-satellite-dish"></i> Status - Call Through Rider + Location</h3>
+<div id="statusBox" style="border:2px dashed #0f172a;padding:10px;border-radius:10px;min-height:120px;background:#f0f9ff;font-size:12px">No active delivery. Place order first.</div>
+</div>
+</div>
+</div>
+
+<div id="aboutModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2><i class="fa-solid fa-circle-question"></i> About Queue System - Positions & Why Used</h2>
+<button class="close-btn" onclick="closeAbout()"><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div class="modal-body">
+<div class="tab-bar">
+<button class="tab active" onclick="switchTab(0)"><i class="fa-solid fa-database"></i> ABOUT QUEUE (RES)</button>
+<button class="tab" onclick="switchTab(1)"><i class="fa-solid fa-map-pin"></i> POSITIONS</button>
+<button class="tab" onclick="switchTab(2)"><i class="fa-solid fa-lightbulb"></i> WHY USED</button>
+<button class="tab" onclick="switchTab(3)"><i class="fa-solid fa-route"></i> FLOW</button>
+</div>
+
+<div id="tab0" class="tab-content active">
+<div class="info-box">
+<h4><i class="fa-solid fa-code"></i> Where Queue Is - RES Results</h4>
+<p><span class="code">let orderQueue = [];</span> ← Queue 1 (Kitchen)<br><span class="code">let deliveryQueue = [];</span> ← Queue 2 (Delivery)<br><span class="code">push()</span> ENQUEUE to REAR, <span class="code">shift()</span> DEQUEUE from FRONT</p>
+</div>
+</div>
+
+<div id="tab1" class="tab-content">
+<div class="info-box">
+<h4><i class="fa-solid fa-crosshairs"></i> These are the Queue - Show Their Positions Using a ?</h4>
+<table class="pos-table">
+<tr><th>Position</th><th>Index</th><th>Meaning</th><th>Operation</th></tr>
+<tr><td><span class="badge badge-front">FRONT</span></td><td>RES[0]</td><td>First ordered - Next to cook/deliver</td><td>Green - shift()</td></tr>
+<tr><td>MIDDLE</td><td>RES[1], RES[2]...</td><td>Waiting FIFO</td><td>White - waiting</td></tr>
+<tr><td><span class="badge badge-rear">REAR</span></td><td>RES[last]</td><td>Last ordered - Newest</td><td>Red - push()</td></tr>
+<tr><td><span class="badge badge-pos">REAR+1</span></td><td>Next index</td><td>Where next order enters</td><td>Bottom - New entry</td></tr>
+</table>
+<p>Example: <span class="code">[Ama FRONT, Kwesi MIDDLE, Yaw REAR]</span> - Top green = FRONT next, Bottom red = REAR last.</p>
+</div>
+</div>
+
+<div id="tab2" class="tab-content">
+<div class="info-box"><h4><i class="fa-solid fa-scale-balanced"></i> 1. Fairness FIFO</h4><p>First ordered gets first. Prevents fights - Ama 10:01 before Kwesi 10:02.</p></div>
+<div class="info-box"><h4><i class="fa-solid fa-kitchen-set"></i> 2. Resource Limitation</h4><p>1 fryer, 1 rider cannot handle 20 at once - needs queue like printer queue.</p></div>
+<div class="info-box"><h4><i class="fa-solid fa-truck-fast"></i> 3. Two Queues for Two Resources</h4><p>Kitchen Queue cooks in order, Delivery Queue delivers per zone. Without queue food cold.</p></div>
+<div class="info-box"><h4><i class="fa-solid fa-shield-halved"></i> 4. Prevent Starvation & Strict FIFO</h4><p>Guarantees all Cape Coast towns served. Only push() to REAR, shift() from FRONT.</p></div>
+</div>
+
+<div id="tab3" class="tab-content">
+<div class="info-box">
+<h4><i class="fa-solid fa-route"></i> Flow - Order to Received</h4>
+<ol style="margin:4px 0;padding-left:18px">
+<li>Customer enters Name, Phone</li>
+<li>Asks Delivery or Face-to-Face?</li>
+<li>If Delivery: Choose Town (26 Cape Coast towns) or write custom if OTHER</li>
+<li>Auto assigns rider: Abura→0241234567, UCC→0551112223 + Call button</li>
+<li>ENQUEUE: PLACE ORDER → Kitchen Queue REAR</li>
+<li>DEQUEUE: COOK NEXT → Kitchen FRONT → Delivery REAR</li>
+<li>Call Through Rider + Location: Rider calls customer for exact location</li>
+<li>I HAVE RECEIVED IT: Receipt with rider number - Let them know received</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="receiptModal" class="modal">
+<div class="receipt-card">
+<div style="width:60px;height:60px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px auto"><i class="fa-solid fa-check" style="color:#16a34a;font-size:28px"></i></div>
+<h2 style="margin:4px 0;color:#16a34a">DELIVERY CONFIRMED - RECEIVED!</h2>
+<p style="font-size:12px;font-weight:600">You have received your food - I have received it</p>
+<div style="border-top:1px dashed #cbd5e1;margin:10px 0"></div>
+<div id="receiptDetails" style="text-align:left;font-size:11px;line-height:1.7"></div>
+<div style="border-top:1px dashed #cbd5e1;margin:10px 0"></div>
+<button class="btn-received" onclick="closeReceipt()"><i class="fa-solid fa-xmark"></i> Close</button>
+<button onclick="window.print()" style="background:#475569;color:white;margin-top:6px"><i class="fa-solid fa-print"></i> Print Receipt</button>
+</div>
+</div>
+
+<script>
+const ridersByTown={"Abura":{name:"Kofi Annan",phone:"0241234567",zone:"Zone 2"},"Adisadel":{name:"Kojo Blay",phone:"0240001122",zone:"Zone 4"},"Amamoma":{name:"Kwesi Ebo",phone:"0551112223",zone:"Zone 1"},"Ankaful":{name:"Kojo Blay",phone:"0240001122",zone:"Zone 4"},"Apewosika":{name:"Kwesi Ebo",phone:"0551112223",zone:"Zone 1"},"Bakano":{name:"Yaw Mensah",phone:"0553344556",zone:"Zone 3"},"Bakaano":{name:"Yaw Mensah",phone:"0553344556",zone:"Zone 3"},"Brofoyedur":{name:"Kofi Annan",phone:"0241234567",zone:"Zone 2"},"Cape Coast Castle Area":{name:"Yaw Mensah",phone:"0553344556",zone:"Zone 3"},"Duakor":{name:"Kojo Blay",phone:"0240001122",zone:"Zone 4"},"Efutu":{name:"Kofi Annan",phone:"0241234567",zone:"Zone 2"},"Egyam":{name:"Kofi Annan",phone:"0241234567",zone:"Zone 2"},"Esuekyir":{name:"Kofi Annan",phone:"0241234567",zone:"Zone 2"},"Eyifua":{name:"Kofi Annan",phone:"0241234567",zone:"Zone 2"},"Fourth Ridge":{name:"Adwoa Mansa",phone:"0244556677",zone:"Zone 1"},"Kakumdo":{name:"Kojo Blay",phone:"0240001122",zone:"Zone 4"},"Kotokuraba":{name:"Yaw Mensah",phone:"0553344556",zone:"Zone 3"},"Kwaprow":{name:"Kwesi Ebo",phone:"0551112223",zone:"Zone 1"},"Nkanfoa":{name:"Kofi Annan",phone:"0241234567",zone:"Zone 2"},"Ola":{name:"Yaw Mensah",phone:"0553344556",zone:"Zone 3"},"Pedu":{name:"Kofi Annan",phone:"0241234567",zone:"Zone 2"},"Siwdu":{name:"Yaw Mensah",phone:"0553344556",zone:"Zone 3"},"Tantri":{name:"Yaw Mensah",phone:"0553344556",zone:"Zone 3"},"Third Ridge":{name:"Adwoa Mansa",phone:"0244556677",zone:"Zone 1"},"UCC Campus":{name:"Kwesi Ebo",phone:"0551112223",zone:"Zone 1 - UCC"},"UCC Science":{name:"Adwoa Mansa",phone:"0244556677",zone:"Zone 1"},"OTHER - My town not listed (Write below)":{name:"Esi Kakra",phone:"0208889900",zone:"General"}};
+let orderQueue=[],deliveryQueue=[];
+function openAbout(){document.getElementById('aboutModal').classList.add('show')}
+function closeAbout(){document.getElementById('aboutModal').classList.remove('show')}
+function switchTab(i){document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx===i));document.querySelectorAll('.tab-content').forEach((c,idx)=>c.classList.toggle('active',idx===i));}
+function setType(t){document.getElementById('dtype').value=t;document.getElementById('labelDelivery').classList.toggle('active',t==='delivery');document.getElementById('labelPickup').classList.toggle('active',t==='pickup');document.getElementById('deliveryOptions').classList.toggle('hidden',t!=='delivery');document.getElementById('pickupOptions').classList.toggle('hidden',t!=='pickup');}
+function onTown(){let town=document.getElementById('townSelect').value;let custom=document.getElementById('customLoc');let rd=document.getElementById('assignedRider');if(town.includes('OTHER')){custom.classList.remove('hidden');rd.innerHTML=`<div class="rider-card" style="background:#fef3c7">Custom Location<br>👩 General: Esi Kakra - <b>0208889900</b> <a href="tel:0208889900" class="btn-call"><i class="fa-solid fa-phone"></i> Call</a></div>`;}else if(town){custom.classList.add('hidden');let r=ridersByTown[town];if(r)rd.innerHTML=`<div class="rider-card" style="background:#f0fdf4;border-color:#86efac"><div><b>${town}</b> - ${r.zone}<br>👨 ${r.name} - <b>${r.phone}</b></div><div><a href="tel:${r.phone}" class="btn-call"><i class="fa-solid fa-phone"></i> Call</a></div></div><small style="font-size:10px;color:#16a34a"><i class="fa-solid fa-location-dot"></i> Call through rider + location: ${town}</small>`;}else{rd.innerHTML='';custom.classList.add('hidden');}}
+function log(m){let l=document.getElementById('log');l.innerHTML+=`[${new Date().toLocaleTimeString()}] ${m}<br>`;l.scrollTop=l.scrollHeight;}
+function placeOrder(){let n=document.getElementById('custName').value.trim();let cp=document.getElementById('custPhone').value.trim();let f=document.getElementById('foodItem').value;let dtype=document.getElementById('dtype').value;let town=document.getElementById('townSelect').value;let customLoc=document.getElementById('customLoc').value.trim();if(!n||!cp||!f||!dtype){alert('Fill Name, Phone, Food, Delivery Type');return;}let finalLoc='';let rider=null;if(dtype==='delivery'){if(!town){alert('Select town in Cape Coast');return;}if(town.includes('OTHER')){if(!customLoc){alert('Write your exact location');return;}finalLoc=customLoc;rider=ridersByTown['OTHER - My town not listed (Write below)'];}else{finalLoc=town;rider=ridersByTown[town];}}else{finalLoc='KFC Tantri Branch - Face to Face Pickup';}let order={id:Date.now(),name:n,cphone:cp,food:f,dtype,location:finalLoc,rider,time:new Date().toLocaleString()};orderQueue.push(order);log(`ENQUEUE REAR RES[${orderQueue.length-1}]: ${n} from ${finalLoc} - Rider ${rider?rider.phone:'Pickup'}`);show();document.getElementById('custName').value='';}
+function cookOrder(){if(orderQueue.length==0){alert('No orders');return;}let o=orderQueue.shift();deliveryQueue.push(o);let html='';if(o.dtype==='delivery'){html=`<div style="font-weight:700;color:#ea580c"><i class="fa-solid fa-motorcycle"></i> OUT FOR DELIVERY - CALL THROUGH RIDER + LOCATION</div><div style="margin-top:6px">Customer: <b>${o.name}</b> - ${o.cphone}<br>Food: ${o.food}<br><i class="fa-solid fa-location-dot"></i> Location: <b>${o.location}</b><br>Rider: ${o.rider.name} - <span style="background:#fef08a;padding:2px 6px;border-radius:4px;font-weight:800">${o.rider.phone}</span></div><div style="margin-top:8px"><a href="tel:${o.rider.phone}" class="btn-call"><i class="fa-solid fa-phone"></i> CALL ${o.rider.name} - ${o.rider.phone}</a></div><button class="btn-received" onclick="confirmReceived()" style="margin-top:8px"><i class="fa-solid fa-check"></i> I HAVE RECEIVED IT - Let them know (Rider: ${o.rider.phone})</button>`;}else{html=`<div style="font-weight:700;color:#16a34a"><i class="fa-solid fa-handshake"></i> READY FOR FACE-TO-FACE</div>Customer: ${o.name}<br>Food: ${o.food}<br>Pickup: ${o.location}<br><button class="btn-received" onclick="confirmReceived()" style="margin-top:8px"><i class="fa-solid fa-check"></i> I HAVE RECEIVED IT</button>`;}document.getElementById('statusBox').innerHTML=html;log(`DEQUEUE FRONT RES[0]: ${o.food} for ${o.name}`);show();}
+function confirmReceived(){if(deliveryQueue.length==0)return;let o=deliveryQueue.shift();let details=`<div style="display:flex;justify-content:space-between"><span>Customer:</span><b>${o.name}</b></div><div style="display:flex;justify-content:space-between"><span>Phone:</span><span>${o.cphone}</span></div><div style="display:flex;justify-content:space-between"><span>Food:</span><span>${o.food}</span></div><div style="display:flex;justify-content:space-between"><span>Type:</span><span>${o.dtype==='delivery'?'🛵 Delivery':'🤝 Face-to-Face'}</span></div><div style="display:flex;justify-content:space-between"><span>Location:</span><b>${o.location}</b></div>${o.rider?`<div style="display:flex;justify-content:space-between"><span>Delivery Person:</span><span>${o.rider.name}</span></div><div style="display:flex;justify-content:space-between;background:#fef08a;padding:4px 6px;border-radius:6px"><span>Rider Number:</span><b>${o.rider.phone}</b></div>`:''}<div style="display:flex;justify-content:space-between"><span>Time Received:</span><span>${new Date().toLocaleString()}</span></div><div style="margin-top:8px;padding:8px;background:#f0fdf4;border-radius:8px;text-align:center"><span style="color:#16a34a;font-weight:800"><i class="fa-solid fa-circle-check"></i> RECEIVED - I have received it</span><br><small>Let them know you have received it</small></div>`;document.getElementById('receiptDetails').innerHTML=details;document.getElementById('receiptModal').classList.add('show');log(`✅ RECEIVED: ${o.name} at ${o.location}`);show();}
+function closeReceipt(){document.getElementById('receiptModal').classList.remove('show');document.getElementById('statusBox').innerHTML='<div style="text-align:center;padding:10px;color:#16a34a"><i class="fa-solid fa-check-circle" style="font-size:24px"></i><br>✅ RECEIVED confirmed<br><small>Ready for next</small></div>';}
+function show(){let k=document.getElementById('kitchenQueue');let d=document.getElementById('deliveryQueue');k.innerHTML=orderQueue.length==0?'<div style="text-align:center;padding:12px;color:#94a3b8;font-size:11px"><i class="fa-solid fa-inbox"></i><br>Kitchen idle<br>RES: [] empty</div>':'';orderQueue.forEach((o,i)=>{k.innerHTML+=`<div class="item ${i==0?'front':''}"><div><div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap"><span class="badge badge-res">RES[${i}]</span> ${i==0?'<span class="badge badge-front">FRONT POS: Next - shift()</span>':''} ${i==orderQueue.length-1?'<span class="badge badge-rear">REAR POS: Last - push()</span>':''} ${i>0&&i<orderQueue.length-1?'<span class="badge badge-pos">POS: MIDDLE</span>':''}</div><b>${o.name}</b> - ${o.food}<br><span style="font-size:10px;color:#64748b"><i class="fa-solid fa-location-dot"></i> ${o.location} | Rider ${o.rider?o.rider.phone:'Pickup'}</span></div></div>`});d.innerHTML=deliveryQueue.length==0?'<div style="text-align:center;padding:12px;color:#94a3b8;font-size:11px"><i class="fa-solid fa-truck"></i><br>No delivery yet<br>RES: [] empty</div>':'';deliveryQueue.forEach((o,i)=>{d.innerHTML+=`<div class="item ${i==0?'front':''}"><div><div style="display:flex;gap:4px"><span class="badge badge-res">RES[${i}]</span> ${i==0?'<span class="badge badge-front">FRONT - Next to deliver</span>':''}</div><b>${o.name}</b> - To ${o.location}<br><span style="font-size:10px;color:#64748b">Rider ${o.rider?o.rider.name+' '+o.rider.phone:''} <a href="tel:${o.rider?o.rider.phone:''}" style="color:#dc2626">Call</a> | POS: ${i==0?'FRONT':'Waiting'}</span></div></div>`});}
+window.onload=()=>{orderQueue=[{id:1,name:'Ama',cphone:'0541112223',food:'🍗 Streetwise 2',dtype:'delivery',location:'Abura',rider:ridersByTown['Abura'],time:new Date().toLocaleString()},{id:2,name:'Kwesi',cphone:'0240001122',food:'🍔 Zinger Burger',dtype:'delivery',location:'UCC Campus',rider:ridersByTown['UCC Campus'],time:new Date().toLocaleString()}];show();log('> Demo RES: [Ama FRONT POS:Next Abura, Kwesi REAR POS:Last UCC] - Click ? for Positions');}
+</script>
+</body>
+</html>
